@@ -1,0 +1,93 @@
+[build-system]
+requires = ["setuptools>=65.0", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "medical-multimodal-rag"
+version = "1.0.0"
+description = "Multi-Modal Medical AI Assistant with RAG, Vision, and OCR"
+requires-python = ">=3.9"
+dependencies = [
+    "torch>=2.1.0",
+    "torchvision>=0.16.0",
+    "transformers>=4.36.0",
+    "fastapi>=0.104.0",
+    "uvicorn>=0.24.0",
+    "langchain>=0.1.0",
+    "chromadb>=0.4.22",
+    "easyocr>=1.7.0",
+]
+
+[tool.black]
+line-length = 120
+target-version = ['py39', 'py310', 'py311']
+exclude = '''
+/(
+    \.git
+  | \.hg
+  | \.mypy_cache
+  | \.tox
+  | \.venv
+  | _build
+  | buck-out
+  | build
+  | dist
+  | venv
+)/
+'''
+
+[tool.isort]
+profile = "black"
+line_length = 120
+skip_glob = ["*/migrations/*", "*/venv/*", "*/node_modules/*"]
+known_first_party = ["src"]
+known_third_party = ["torch", "transformers", "fastapi"]
+
+[tool.pylint.messages_control]
+disable = [
+    "C0330",  # Wrong hanging indentation before block
+    "C0326",  # Bad whitespace
+    "R0801",  # Duplicate code
+    "W0212",  # Access to protected member
+    "R0913",  # Too many arguments
+    "R0914",  # Too many local variables
+    "C0114",  # Missing module docstring
+    "C0115",  # Missing class docstring
+    "C0116",  # Missing function docstring
+]
+
+[tool.pylint.format]
+max-line-length = 120
+indent-string = '    '
+
+[tool.mypy]
+python_version = "3.11"
+warn_return_any = true
+warn_unused_configs = true
+ignore_missing_imports = true
+disallow_untyped_defs = false
+disallow_incomplete_defs = false
+check_untyped_defs = false
+exclude = ["venv/", "tests/", ".venv/"]
+
+[[tool.mypy.overrides]]
+module = [
+    "torch.*",
+    "transformers.*",
+    "torchvision.*",
+    "easyocr.*",
+    "cv2.*",
+]
+ignore_missing_imports = true
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+python_files = ["test_*.py", "*_test.py"]
+python_classes = ["Test*"]
+python_functions = ["test_*"]
+addopts = "-v --tb=short"
+markers = [
+    "slow: marks tests as slow (deselect with '-m \"not slow\"')",
+    "integration: marks tests as integration tests",
+    "unit: marks tests as unit tests",
+]

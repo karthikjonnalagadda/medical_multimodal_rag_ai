@@ -1,0 +1,15 @@
+DIR  .pytest_cache
+DIR  .pytest_runtime
+DIR  {data
+FAIL DIR  .pytest_tmp (PermissionError: [WinError 5] Access is denied: 'C:\\Users\\karth\\Downloads\\medical_multimodal_rag_ai\\medical_multimodal_rag_ai\\.pytest_tmp')
+FAIL DIR  pytest-cache-files-5wmfv535 (PermissionError: [WinError 5] Access is denied: 'C:\\Users\\karth\\Downloads\\medical_multimodal_rag_ai\\medical_multimodal_rag_ai\\pytest-cache-files-5wmfv535')
+FAIL DIR  pytest-cache-files-6_zasj6o (PermissionError: [WinError 5] Access is denied: 'C:\\Users\\karth\\Downloads\\medical_multimodal_rag_ai\\medical_multimodal_rag_ai\\pytest-cache-files-6_zasj6o')
+FAIL DIR  pytest-cache-files-a4z6u0f8 (PermissionError: [WinError 5] Access is denied: 'C:\\Users\\karth\\Downloads\\medical_multimodal_rag_ai\\medical_multimodal_rag_ai\\pytest-cache-files-a4z6u0f8')
+FAIL DIR  pytest-cache-files-ah4lfp7w (PermissionError: [WinError 5] Access is denied: 'C:\\Users\\karth\\Downloads\\medical_multimodal_rag_ai\\medical_multimodal_rag_ai\\pytest-cache-files-ah4lfp7w')
+FAIL DIR  pytest-cache-files-cgxhkqju (PermissionError: [WinError 5] Access is denied: 'C:\\Users\\karth\\Downloads\\medical_multimodal_rag_ai\\medical_multimodal_rag_ai\\pytest-cache-files-cgxhkqju')
+FAIL DIR  pytest-cache-files-old1b8j6 (PermissionError: [WinError 5] Access is denied: 'C:\\Users\\karth\\Downloads\\medical_multimodal_rag_ai\\medical_multimodal_rag_ai\\pytest-cache-files-old1b8j6')
+FAIL DIR  pytest-cache-files-pv_7grjm (PermissionError: [WinError 5] Access is denied: 'C:\\Users\\karth\\Downloads\\medical_multimodal_rag_ai\\medical_multimodal_rag_ai\\pytest-cache-files-pv_7grjm')
+FAIL DIR  pytest-cache-files-w3sk2_8c (PermissionError: [WinError 5] Access is denied: 'C:\\Users\\karth\\Downloads\\medical_multimodal_rag_ai\\medical_multimodal_rag_ai\\pytest-cache-files-w3sk2_8c')
+FAIL DIR  pytest-cache-files-wguz_bg2 (PermissionError: [WinError 5] Access is denied: 'C:\\Users\\karth\\Downloads\\medical_multimodal_rag_ai\\medical_multimodal_rag_ai\\pytest-cache-files-wguz_bg2')
+FAIL DIR  pytest-cache-files-xhv79b9r (PermissionError: [WinError 5] Access is denied: 'C:\\Users\\karth\\Downloads\\medical_multimodal_rag_ai\\medical_multimodal_rag_ai\\pytest-cache-files-xhv79b9r')
+FAIL DIR  pytest_tmp (PermissionError: [WinError 5] Access is denied: 'C:\\Users\\karth\\Downloads\\medical_multimodal_rag_ai\\medical_multimodal_rag_ai\\pytest_tmp')

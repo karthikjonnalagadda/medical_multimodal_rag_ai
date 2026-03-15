@@ -1,0 +1,77 @@
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+build/
+dist/
+*.egg-info/
+.eggs/
+
+# Virtual environments
+venv/
+env/
+.venv/
+
+# Environment variables
+.env
+
+# Data (large files – use DVC or git-lfs for datasets)
+data/medical_images/**/*.jpg
+data/medical_images/**/*.png
+data/medical_images/**/*.dcm
+data/lab_reports/**/*.pdf
+data/vector_store/
+data/knowledge_base/*.json
+data/knowledge_base/**/*.pdf
+
+# Models (large binaries)
+models/**/*.pth
+models/**/*.bin
+models/**/*.onnx
+
+# Logs
+logs/
+*.log
+
+# IDE
+.idea/
+.vscode/
+*.swp
+*.swo
+
+# Jupyter checkpoints
+.ipynb_checkpoints/
+notebooks/**/.ipynb_checkpoints/
+
+# Testing
+.pytest_cache/
+.pytest_tmp/
+pytest_tmp/
+pytest-cache-files-*/
+.pytest_runtime/
+.coverage
+htmlcov/
+coverage.xml
+
+# ChromaDB
+chroma_db/
+__chroma_db/
+
+# macOS
+.DS_Store
+
+# Docker volumes
+docker/volumes/
+
+# Frontend
+frontend/node_modules/
+frontend/dist/
+frontend/.vite/
+frontend/.env
+frontend/.env.local
+frontend/.git/
+
+# Parked old git metadata (repo reset)
+.git_old/

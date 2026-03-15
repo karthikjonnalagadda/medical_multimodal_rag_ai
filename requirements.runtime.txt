@@ -1,0 +1,55 @@
+# Minimal runtime dependencies for local execution (API + Streamlit).
+# This file intentionally excludes CI/CD, Docker tooling, and notebook-only packages.
+#
+# Install:
+#   venv\Scripts\python.exe -m pip install -r requirements.runtime.txt
+
+# Core
+fastapi>=0.109.0
+uvicorn[standard]>=0.27.0
+pydantic>=2.5.0
+python-multipart>=0.0.6
+python-dotenv>=1.0.0
+loguru>=0.7.2
+numpy>=1.24.0
+Pillow>=10.0.0
+requests>=2.31.0
+httpx>=0.25.0
+
+# Embeddings + LLM backends
+torch>=2.1.0
+torchvision>=0.16.0
+transformers>=4.36.0
+sentence-transformers>=2.3.0
+openai>=1.0.0
+
+# Vector store (default: Chroma). FAISS is optional and only used when selected.
+chromadb>=0.4.22
+faiss-cpu>=1.7.4
+
+# OCR (PDF + images)
+easyocr>=1.7.0
+pytesseract>=0.3.10
+PyMuPDF>=1.23.0
+
+# Vision (X-ray baseline + DICOM)
+torchxrayvision>=1.2.4
+pydicom>=2.4.0
+opencv-python-headless>=4.8.0
+
+# NLP preprocessing
+spacy>=3.7.0
+nltk>=3.8.1
+
+# Explainability (optional UI features)
+grad-cam>=1.4.8
+shap>=0.43.0
+lime>=0.2.0.1
+
+# UI
+streamlit>=1.30.0
+streamlit-extras>=0.3.6
+
+# Optional persistence
+pymongo[srv]>=4.8.0
+
