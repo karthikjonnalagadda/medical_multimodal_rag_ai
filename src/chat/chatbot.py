@@ -111,9 +111,19 @@ def normalize_clinical_json_response(text: str) -> dict[str, Any]:
                     out.append(item.strip())
                 continue
             if isinstance(item, dict):
-                name = item.get("name") or item.get("condition") or item.get("title") or ""
+                name = (
+                    item.get("disease")
+                    or item.get("name")
+                    or item.get("condition")
+                    or item.get("title")
+                    or ""
+                )
+                reason = item.get("reason") or item.get("rationale") or item.get("why") or ""
                 if name:
-                    out.append(as_str(name))
+                    if reason:
+                        out.append(f"{as_str(name)} ({as_str(reason)})")
+                    else:
+                        out.append(as_str(name))
                     continue
             text_item = as_str(item)
             if text_item:
@@ -132,7 +142,7 @@ def normalize_clinical_json_response(text: str) -> dict[str, Any]:
     diagnosis = payload.get("diagnosis") or payload.get("primary_diagnosis") or ""
     confidence = payload.get("confidence") or payload.get("diagnosis_confidence") or ""
     possible_conditions = payload.get("possible_conditions") or payload.get("conditions") or payload.get("differential") or []
-    explanation = payload.get("explanation") or payload.get("analysis") or payload.get("answer") or ""
+    explanation = payload.get("explanation") or payload.get("analysis") or payload.get("answer") or payload.get("response") or ""
     recommended_tests = payload.get("recommended_tests") or payload.get("tests") or []
     next_steps = payload.get("next_steps") or payload.get("follow_up") or payload.get("followup") or []
 
@@ -142,6 +152,15 @@ def normalize_clinical_json_response(text: str) -> dict[str, Any]:
     normalized["explanation"] = as_str(explanation)
     normalized["recommended_tests"] = as_list_of_strings(recommended_tests)
     normalized["next_steps"] = as_list_of_strings(next_steps)
+
+    clinical_notes = payload.get("clinical_notes") or payload.get("notes") or ""
+    if clinical_notes and isinstance(clinical_notes, str):
+        notes_str = clinical_notes.strip()
+        if notes_str:
+            if normalized["explanation"]:
+                normalized["explanation"] = normalized["explanation"].rstrip() + "\n\nClinical notes: " + notes_str
+            else:
+                normalized["explanation"] = notes_str
 
     if not normalized["diagnosis"] and normalized["possible_conditions"]:
         normalized["diagnosis"] = normalized["possible_conditions"][0]
@@ -223,30 +242,37 @@ class MedicalChatbot:
     - Minimal token consumption on Groq
     """
     
-    SYSTEM_PROMPT = """You are a medical AI assistant providing educational information.
-Respond ONLY with valid JSON matching this exact schema (no markdown, no extra keys):
+    SYSTEM_PROMPT = """You are a medical AI assistant.
+
+Return ONLY valid JSON.
+Do not include explanations, markdown, or text outside JSON.
+
+The JSON MUST follow this schema:
 {
-  "diagnosis": "",
-  "confidence": "",
-  "possible_conditions": [],
-  "explanation": "",
+  "response": "",
+  "possible_conditions": [
+    {
+      "disease": "",
+      "confidence": "",
+      "reason": ""
+    }
+  ],
   "recommended_tests": [],
-  "next_steps": []
+  "clinical_notes": ""
 }
-Use uncertainty-aware language (e.g., "may", "could", "is consistent with") and do not claim definitive diagnoses.
-If you are uncertain, leave diagnosis/confidence empty and explain the uncertainty in "explanation"."""
+
+Rules:
+- Always use double quotes.
+- Do not include trailing commas.
+- Do not output any text outside the JSON object.
+- Use uncertainty-aware language in fields like "response"/"reason" (e.g., "may", "could", "is consistent with")."""
 
     CHAT_PROMPT_TEMPLATE = """User question: {question}
 
 Retrieved medical context:
 {context}
 
-Return ONLY a JSON object following the schema from the system prompt.
-Rules:
-- possible_conditions: list of short condition names (strings)
-- recommended_tests / next_steps: lists of short actionable strings
-- confidence: a short string like "low", "medium", "high" or "85%"
-"""
+Return ONLY a JSON object following the schema from the system prompt."""
 
     def __init__(
         self,
@@ -260,8 +286,8 @@ Rules:
         xai_api_key: str = "",
         xai_base_url: str = "https://api.x.ai/v1",
         top_k: int = 3,
-        max_tokens: int = 256,
-        temperature: float = 0.1,
+        max_tokens: int = 512,
+        temperature: float = 0.2,
     ):
         """Initialize the medical chatbot.
         

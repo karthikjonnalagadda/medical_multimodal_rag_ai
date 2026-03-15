@@ -301,7 +301,8 @@ class _OpenAICompatibleLLM(_LLMAdapter):
             except Exception as e:
                 # If strict JSON mode caused the failure, retry once without it.
                 if use_strict_json_mode and "json_validate_failed" in str(e):
-                    logger.warning(f"{self.provider_name} JSON mode validation failed; retrying without JSON mode: {e}")
+                    # This is recoverable (we retry once). Keep it out of WARNING to reduce log noise.
+                    logger.debug(f"{self.provider_name} JSON mode validation failed; retrying without JSON mode: {e}")
                 if use_strict_json_mode:
                     try:
                         resp = client.chat.completions.create(

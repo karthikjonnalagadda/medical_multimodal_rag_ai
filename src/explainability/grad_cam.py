@@ -39,17 +39,29 @@ class GradCAMExplainer:
 
     def _register_hooks(self) -> None:
         def _forward_hook(_module, _inputs, output):
-            # Some backbones (e.g., DenseNet variants) use in-place ops and can yield
-            # view tensors that autograd forbids modifying in-place during backward-hook flows.
-            # Clone here to decouple from autograd-managed views.
+            """
+            Capture activations and gradients without using full backward hooks.
+
+            PyTorch's full backward hooks can wrap tensors in BackwardHookFunction, and some
+            models with in-place ops can then trigger:
+              "Output 0 of BackwardHookFunctionBackward is a view and is being modified inplace."
+
+            Using `Tensor.register_hook` on the forward output avoids that wrapper path.
+            """
+            if not isinstance(output, torch.Tensor):
+                return
+
+            # Keep a detached clone of activations for CAM computation.
             self.activations = output.detach().clone()
 
-        def _backward_hook(_module, _grad_input, grad_output):
-            # grad_output[0] can be a view; clone to avoid "view modified inplace" errors.
-            self.gradients = grad_output[0].detach().clone()
+            def _save_grad(grad: torch.Tensor):
+                self.gradients = grad.detach().clone()
+
+            # Register a grad hook on the actual graph tensor (no full backward hook).
+            if output.requires_grad:
+                output.register_hook(_save_grad)
 
         self.target_layer.register_forward_hook(_forward_hook)
-        self.target_layer.register_full_backward_hook(_backward_hook)
 
     def explain(
         self,
@@ -60,6 +72,10 @@ class GradCAMExplainer:
     ) -> GradCAMResult:
         if image_tensor.ndim != 4:
             raise ValueError("Grad-CAM expects a 4D tensor.")
+
+        # Reset captured tensors for this run.
+        self.activations = None
+        self.gradients = None
 
         self.model.zero_grad(set_to_none=True)
         output = self.model(image_tensor)

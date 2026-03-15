@@ -218,7 +218,26 @@ class MedicalImageAnalyser:
             else:
                 arr = np.transpose(arr, (2, 0, 1))
             tensor = torch.from_numpy(arr).unsqueeze(0)
-        return tensor.to(self.backend.device)
+        tensor = tensor.to(self.backend.device)
+
+        # TorchXRayVision models expect inputs roughly in the range [-1024, 1024].
+        # Most PIL/ToTensor pipelines produce [0, 1] floats, which triggers:
+        #   "Input image range [0.00,1.00] expected [-1024,1024]"
+        # Apply equivalent normalization in-torch (no numpy dependency, no in-place ops).
+        if self.backend_name == "torchxrayvision":
+            tensor = self._normalize_for_torchxrayvision(tensor)
+
+        return tensor
+
+    def _normalize_for_torchxrayvision(self, tensor: "torch.Tensor") -> "torch.Tensor":
+        x = tensor.float()
+        # If the tensor is already in 0-255 (rare in this codepath), normalize accordingly.
+        max_val = float(x.detach().max().cpu().item()) if x.numel() else 1.0
+        if max_val > 1.5:
+            x = (2.0 * (x / 255.0) - 1.0) * 1024.0
+        else:
+            x = (2.0 * x - 1.0) * 1024.0
+        return x
 
     def _to_grayscale(self, image: Image.Image, output_channels: int = 1) -> Image.Image:
         grayscale = image.convert("L")
